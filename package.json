@@ -1,0 +1,15 @@
+{
+  "name": "tictactoe2",
+  "version": "1.0.0",
+  "description": "Second try on making a tic tac toe AI with Typescript and the Matchbox AI",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Karuvathil Akshay Vijaykumar",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
