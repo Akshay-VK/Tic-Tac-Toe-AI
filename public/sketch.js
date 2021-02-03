@@ -1,6 +1,11 @@
 var squares = [];
 var state = true;
-var winner = "";
+var moves = 0;
+var positions = [
+    "", "", "",
+    "", "", "",
+    "", "", "",
+];
 // true = O
 // false = X
 var options = [
@@ -26,24 +31,33 @@ function initiateGame() {
 }
 //SETTING VALUE
 function setValue(id) {
+    moves = moves + 1;
+    console.log('setting value...');
     if (squares[id].innerHTML == "") {
         squares[id].innerHTML = state ? "O" : "X";
+        positions[id] = state ? "O" : "X";
         state = !state;
     }
     var winner = findWinner();
-    if (winner != "none") {
-        // for(var i = 0; i < squares.length; i++) {
-        //     squares[i].innerHTML = `Winner: ${winner}`;
-        // }
-        alert("Winner: " + winner);
+    if (winner != "") {
+        for (var i = 0; i < squares.length; i++) {
+            document.getElementById("a" + (i + 1)).disabled = true;
+        }
+        //alert(`Winner: ${winner}`);
+        document.getElementById('winningDiv').innerHTML = winner + " wins!";
     }
-    alert("Returned winner: " + winner);
+    //alert(`Returned winner: ${winner}`);
+    if (moves >= 9) {
+        if (winner == "") {
+            document.getElementById('winningDiv').innerHTML = "DRAW";
+        }
+    }
 }
 // 012
 // 345
 // 678
 function findWinner() {
-    winner = "";
+    var winner = "";
     for (var i = 0; i < options.length; i++) {
         var a = options[i][0];
         var b = options[i][1];
@@ -53,10 +67,19 @@ function findWinner() {
                 if (squares[b].innerHTML == squares[c].innerHTML) {
                     winner = squares[a].innerHTML;
                 }
+                else {
+                    winner = "";
+                }
+            }
+            else {
+                winner = "";
             }
         }
         else {
-            winner = "none";
+            winner = "";
+        }
+        if (winner != "") {
+            break;
         }
     }
     console.log(winner);

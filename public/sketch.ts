@@ -1,7 +1,7 @@
 export {};
 var squares:HTMLElement[] = [];
 var state: boolean = true;
-//var winner: string = "";
+var moves: number = 0;
 var positions: Array<string> = [
     "","","",
     "","","",
@@ -36,6 +36,8 @@ function initiateGame() :void{
 
 //SETTING VALUE
 function setValue(id: number): void {
+    moves = moves+1;
+    console.log('setting value...');
     if(squares[id].innerHTML == "") {
         squares[id].innerHTML = state ? "O" : "X";
         positions[id] = state ? "O" : "X";
@@ -44,12 +46,20 @@ function setValue(id: number): void {
     }
     var winner: string = findWinner();
     if(winner != "") {
-        // for(var i = 0; i < squares.length; i++) {
-        //     squares[i].innerHTML = `Winner: ${winner}`;
-        // }
-        alert(`Winner: ${winner}`);
+        for(var i = 0; i < squares.length; i++) {
+            document.getElementById(`a${i+1}`).disabled = true;
+        }
+        //alert(`Winner: ${winner}`);
+        document.getElementById('winningDiv').innerHTML = `${winner} wins!`;
+
     }
-    alert(`Returned winner: ${winner}`);
+    //alert(`Returned winner: ${winner}`);
+    
+    if(moves >= 9){
+        if(winner == "") {
+            document.getElementById('winningDiv').innerHTML = `DRAW`;
+        }
+    }
 }
 
 // 012
