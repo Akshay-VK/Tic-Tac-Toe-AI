@@ -43,6 +43,9 @@ function setValue(id: number): void {
         positions[id] = state ? "O" : "X";
         
         state = !state;
+
+        
+        
     }
     var winner: string = findWinner();
     if(winner != "") {
@@ -60,6 +63,7 @@ function setValue(id: number): void {
             document.getElementById('winningDiv').innerHTML = `DRAW`;
         }
     }
+
 }
 
 // 012
