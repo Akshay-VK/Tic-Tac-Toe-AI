@@ -1,7 +1,10 @@
+import { response } from "express";
+
 export {};
 var squares:HTMLElement[] = [];
 var state: boolean = true;
 var moves: number = 0;
+var allMoves: Array<string> = [];
 var positions: Array<string> = [
     "","","",
     "","","",
@@ -44,7 +47,10 @@ function setValue(id: number): void {
         
         state = !state;
 
-        
+        if(!state) {
+            //GENERATE ID
+            fetchStuff();
+        }
         
     }
     var winner: string = findWinner();
@@ -56,6 +62,7 @@ function setValue(id: number): void {
         document.getElementById('winningDiv').innerHTML = `${winner} wins!`;
 
     }
+
     //alert(`Returned winner: ${winner}`);
     
     if(moves >= 9){
@@ -64,6 +71,31 @@ function setValue(id: number): void {
         }
     }
 
+}
+
+function fetchStuff(): void{
+    //GENERATE ID
+    var formatId:string = "";
+    for(var i = 0;i < squares.length;i++) {
+        if(squares[i].innerHTML == "X"){
+            formatId += "X";
+        }
+        if(squares[i].innerHTML == "O"){
+            formatId += "O";
+        }
+        if(squares[i].innerHTML == ""){
+            formatId += "S";
+        }                
+    }
+    allMoves.push(formatId);
+
+    console.log("fetching...");
+    fetch(`/get/${formatId}`)
+    .then(response =>  response.json())
+    .then(data => {
+        console.log(data);
+        setValue(data.value);
+    });
 }
 
 // 012

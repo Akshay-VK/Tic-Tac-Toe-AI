@@ -1,6 +1,7 @@
 var squares = [];
 var state = true;
 var moves = 0;
+var allMoves = [];
 var positions = [
     "", "", "",
     "", "", "",
@@ -37,6 +38,10 @@ function setValue(id) {
         squares[id].innerHTML = state ? "O" : "X";
         positions[id] = state ? "O" : "X";
         state = !state;
+        if (!state) {
+            //GENERATE ID
+            fetchStuff();
+        }
     }
     var winner = findWinner();
     if (winner != "") {
@@ -52,6 +57,29 @@ function setValue(id) {
             document.getElementById('winningDiv').innerHTML = "DRAW";
         }
     }
+}
+function fetchStuff() {
+    //GENERATE ID
+    var formatId = "";
+    for (var i = 0; i < squares.length; i++) {
+        if (squares[i].innerHTML == "X") {
+            formatId += "X";
+        }
+        if (squares[i].innerHTML == "O") {
+            formatId += "O";
+        }
+        if (squares[i].innerHTML == "") {
+            formatId += "S";
+        }
+    }
+    allMoves.push(formatId);
+    console.log("fetching...");
+    fetch("/get/" + formatId)
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+        console.log(data);
+        setValue(data.value);
+    });
 }
 // 012
 // 345

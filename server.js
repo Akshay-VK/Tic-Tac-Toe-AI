@@ -1,28 +1,20 @@
 var express = require('express');
 var path = require('path');
 var app = express();
+
+
+var fs = require('fs');
+var rawRead = fs.readFileSync('ai.json');
+var  data = JSON.parse(rawRead);
+
+
 var port = process.env.port || 3000;
 
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-var data = {};
 
-app.get('/new/:id',(req,res) => {
-    var key = req.params.id;
-    //var empty = 0;
-    var rawData = [];
-    for(var i = 0;i < 9 ;i++) {
-        if(key.charAt(i) == "S") {
-            for(var j = 0; j < 50;i++) {
-                rawData.push(i);
-            }
-        }
-    }
-    data[key] = rawData;
-    console.log(data);
-    res.send({"status":"ok"});
-});
+console.log(data);
 
 app.get('/update/:id/:outcome',(req,res) => {
     var outcome = req.params.outcome;
@@ -52,14 +44,56 @@ app.get('/update/:id/:outcome',(req,res) => {
 });
 
 app.get('/get/:id',(req,res) => {
-    if(typeof data[req.params.id] == Array){
+    //var response = getValue(req.params.id);
+    //console.log(req.params.id);
+    if(data == {} || `${req.params.id}` in data){
         var index = Math.floor(Math.random()*9);
 
-        res.send({"status":"ok","value":index});
+        //console.log(data);
+        res.send({"value":index});
     }else {
-        res.send({"status":"not found"});
+        var rawData = [];
+        for(var i = 0;i < 9 ;i++) {
+            if(req.params.id.charAt(i) == "S") {
+                for(var j = 0; j < 10;i++) {
+                    rawData.push(i);
+                }
+            }
+        }
+        //console.log(rawData)
+        data[req.params.id] = rawData;
+        //console.log(data);
+
+        var index = Math.floor(Math.random()*9);
+        res.send({"value":index});
     }
 });
+
+// function getValue(_id) {
+//     if(data.hasOwnProperty(_id)){
+//         var index = Math.floor(Math.random()*9);
+
+//         return {"status":"ok","value":index};
+//     }else {
+//         createNew(_id);
+//     }
+// }
+
+// function createNew(_key) {
+//     var key = _key;
+//     //var empty = 0;
+//     var rawData = [];
+//     for(var i = 0;i < 9 ;i++) {
+//         if(key.charAt(i) == "S") {
+//             for(var j = 0; j < 50;i++) {
+//                 rawData.push(i);
+//             }
+//         }
+//     }
+//     data[key] = rawData;
+//     console.log(data);
+//     getValue(key);
+// }
 
 app.listen(port,()=>{
     console.log(`Server started st port ${port}`);
