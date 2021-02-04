@@ -2,6 +2,7 @@ export {};
 var squares:HTMLElement[] = [];
 var state: boolean = true;
 var moves: number = 0;
+var playable:boolean = true;
 var allMoves: Array<string> = [];
 var positions: Array<string> = [
     "","","",
@@ -37,35 +38,37 @@ function initiateGame() :void{
 
 //SETTING VALUE
 function setValue(id: number): void {
-    moves = moves+1;
-    console.log('setting value...');
-    if(squares[id].innerHTML == "") {
-        squares[id].innerHTML = state ? "O" : "X";
-        positions[id] = state ? "O" : "X";
-        
-        state = !state;
+    if(playable) {
+        moves = moves+1;
+        console.log('setting value...');
+        if(squares[id].innerHTML == "") {
+            squares[id].innerHTML = state ? "O" : "X";
+            positions[id] = state ? "O" : "X";
+            
+            state = !state;
 
-        if(!state) {
-            //GENERATE ID
-            fetchStuff();
+            if(!state) {
+                //GENERATE ID
+                fetchStuff();
+            }
+            
         }
-        
-    }
-    var winner: string = findWinner();
-    if(winner != "") {
-        for(var i = 0; i < squares.length; i++) {
-            document.getElementById(`a${i+1}`).disabled = true;
+        var winner: string = findWinner();
+        if(winner != "") {
+            for(var i = 0; i < squares.length; i++) {
+                document.getElementById(`a${i+1}`).disabled = true;
+            }
+            //alert(`Winner: ${winner}`);
+            document.getElementById('winningDiv').innerHTML = `${winner} wins!`;
+
         }
-        //alert(`Winner: ${winner}`);
-        document.getElementById('winningDiv').innerHTML = `${winner} wins!`;
 
-    }
-
-    //alert(`Returned winner: ${winner}`);
-    
-    if(moves >= 9){
-        if(winner == "") {
-            document.getElementById('winningDiv').innerHTML = `DRAW`;
+        //alert(`Returned winner: ${winner}`);
+        
+        if(moves >= 9){
+            if(winner == "") {
+                document.getElementById('winningDiv').innerHTML = `DRAW`;
+            }
         }
     }
 
@@ -73,29 +76,39 @@ function setValue(id: number): void {
 
 function fetchStuff(): void{
     //GENERATE ID
-    var formatId:string = "";
-    for(var i = 0;i < squares.length;i++) {
-        if(squares[i].innerHTML == "X"){
-            formatId += "X";
+    if(moves<9){
+        var formatId:string = "";
+        for(var i = 0;i < squares.length;i++) {
+            if(squares[i].innerHTML == "X"){
+                formatId += "X";
+            }
+            if(squares[i].innerHTML == "O"){
+                formatId += "O";
+            }
+            if(squares[i].innerHTML == ""){
+                formatId += "S";
+            }                
         }
-        if(squares[i].innerHTML == "O"){
-            formatId += "O";
-        }
-        if(squares[i].innerHTML == ""){
-            formatId += "S";
-        }                
-    }
-    allMoves.push(formatId);
+        console.log('format id: '+formatId);
+        playable = false;
+        allMoves.push(formatId);
 
-    console.log("fetching...");
-    fetch(`/get/${formatId}`)
-    .then(response =>  {
-        return response.json();
-    })
-    .then(data => {
-        console.log(data);
-        document.getElementById(`a${data["value"]}`).click();
-    });
+        console.log("fetching...");
+        fetch(`/get/${formatId}`)
+        .then(response =>  {
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            playable = true;
+            //document.getElementById(`a${data.value}`).click();
+            if("value" in data) {
+                setValue(data.value);
+            }else{
+                alert('There was a error. please refresh');
+            }
+        });
+    }
 }
 
 // 012

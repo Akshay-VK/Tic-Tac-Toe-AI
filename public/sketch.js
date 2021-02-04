@@ -1,6 +1,7 @@
 var squares = [];
 var state = true;
 var moves = 0;
+var playable = true;
 var allMoves = [];
 var positions = [
     "", "", "",
@@ -32,56 +33,69 @@ function initiateGame() {
 }
 //SETTING VALUE
 function setValue(id) {
-    moves = moves + 1;
-    console.log('setting value...');
-    if (squares[id].innerHTML == "") {
-        squares[id].innerHTML = state ? "O" : "X";
-        positions[id] = state ? "O" : "X";
-        state = !state;
-        if (!state) {
-            //GENERATE ID
-            fetchStuff();
+    if (playable) {
+        moves = moves + 1;
+        console.log('setting value...');
+        if (squares[id].innerHTML == "") {
+            squares[id].innerHTML = state ? "O" : "X";
+            positions[id] = state ? "O" : "X";
+            state = !state;
+            if (!state) {
+                //GENERATE ID
+                fetchStuff();
+            }
         }
-    }
-    var winner = findWinner();
-    if (winner != "") {
-        for (var i = 0; i < squares.length; i++) {
-            document.getElementById("a" + (i + 1)).disabled = true;
+        var winner = findWinner();
+        if (winner != "") {
+            for (var i = 0; i < squares.length; i++) {
+                document.getElementById("a" + (i + 1)).disabled = true;
+            }
+            //alert(`Winner: ${winner}`);
+            document.getElementById('winningDiv').innerHTML = winner + " wins!";
         }
-        //alert(`Winner: ${winner}`);
-        document.getElementById('winningDiv').innerHTML = winner + " wins!";
-    }
-    //alert(`Returned winner: ${winner}`);
-    if (moves >= 9) {
-        if (winner == "") {
-            document.getElementById('winningDiv').innerHTML = "DRAW";
+        //alert(`Returned winner: ${winner}`);
+        if (moves >= 9) {
+            if (winner == "") {
+                document.getElementById('winningDiv').innerHTML = "DRAW";
+            }
         }
     }
 }
 function fetchStuff() {
     //GENERATE ID
-    var formatId = "";
-    for (var i = 0; i < squares.length; i++) {
-        if (squares[i].innerHTML == "X") {
-            formatId += "X";
+    if (moves < 9) {
+        var formatId = "";
+        for (var i = 0; i < squares.length; i++) {
+            if (squares[i].innerHTML == "X") {
+                formatId += "X";
+            }
+            if (squares[i].innerHTML == "O") {
+                formatId += "O";
+            }
+            if (squares[i].innerHTML == "") {
+                formatId += "S";
+            }
         }
-        if (squares[i].innerHTML == "O") {
-            formatId += "O";
-        }
-        if (squares[i].innerHTML == "") {
-            formatId += "S";
-        }
+        console.log('format id: ' + formatId);
+        playable = false;
+        allMoves.push(formatId);
+        console.log("fetching...");
+        fetch("/get/" + formatId)
+            .then(function (response) {
+            return response.json();
+        })
+            .then(function (data) {
+            console.log(data);
+            playable = true;
+            //document.getElementById(`a${data.value}`).click();
+            if ("value" in data) {
+                setValue(data.value);
+            }
+            else {
+                alert('There was a error. please refresh');
+            }
+        });
     }
-    allMoves.push(formatId);
-    console.log("fetching...");
-    fetch("/get/" + formatId)
-        .then(function (response) {
-        return response.json();
-    })
-        .then(function (data) {
-        console.log(data);
-        document.getElementById("a" + data["value"]).click();
-    });
 }
 // 012
 // 345
