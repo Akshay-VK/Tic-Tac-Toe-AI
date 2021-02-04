@@ -75,10 +75,12 @@ function fetchStuff() {
     allMoves.push(formatId);
     console.log("fetching...");
     fetch("/get/" + formatId)
-        .then(function (response) { return response.json(); })
+        .then(function (response) {
+        return response.json();
+    })
         .then(function (data) {
         console.log(data);
-        setValue(data.value);
+        document.getElementById("a" + data["value"]).click();
     });
 }
 // 012

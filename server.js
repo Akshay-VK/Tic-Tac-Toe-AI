@@ -3,9 +3,9 @@ var path = require('path');
 var app = express();
 
 
-var fs = require('fs');
-var rawRead = fs.readFileSync('ai.json');
-var  data = JSON.parse(rawRead);
+var Datastore = require('nedb');
+var db = new Datastore('database.db');
+db.loadDatabase();
 
 
 var port = process.env.port || 3000;
@@ -14,7 +14,7 @@ var port = process.env.port || 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-console.log(data);
+
 
 app.get('/update/:id/:outcome',(req,res) => {
     var outcome = req.params.outcome;
@@ -46,27 +46,46 @@ app.get('/update/:id/:outcome',(req,res) => {
 app.get('/get/:id',(req,res) => {
     //var response = getValue(req.params.id);
     //console.log(req.params.id);
-    if(data == {} || `${req.params.id}` in data){
-        var index = Math.floor(Math.random()*9);
+    // if(data == {} || `${req.params.id}` in data){
+    //     var index = Math.floor(Math.random()*9);
 
-        //console.log(data);
-        res.send({"value":index});
-    }else {
-        var rawData = [];
-        for(var i = 0;i < 9 ;i++) {
-            if(req.params.id.charAt(i) == "S") {
-                for(var j = 0; j < 10;i++) {
-                    rawData.push(i);
+    //     //console.log(data);
+    //     res.send({"value":index});
+    // }else {
+    //     var rawData = [];
+    //     for(var i = 0;i < 9 ;i++) {
+    //         if(req.params.id.charAt(i) == "S") {
+    //             for(var j = 0; j < 10;i++) {
+    //                 rawData.push(i);
+    //             }
+    //         }
+    //     }
+    //     //console.log(rawData)
+    //     data[req.params.id] = rawData;
+    //     //console.log(data);
+
+    //     var index = Math.floor(Math.random()*9);
+    //     res.send({"value":index});
+    // }
+    db.find({myId: `${req.params.id}`},(err,docs) => {
+        if (docs.length == 0){
+            var rawData = [];
+            for(var i = 0;i < 9 ;i++) {
+                if(req.params.id.charAt(i) == "S") {
+                    for(var j = 0; j < 10;j++) {
+                        rawData.push(i);
+                    }
                 }
             }
+            db.insert({myId: req.params.id,data:rawData},(err,newDoc) => {
+                console.log(newDoc);
+            });
+        }else{
+            console.log('sending...');
+            res.send({"value":docs[0].data});
+            console.log('...sent');
         }
-        //console.log(rawData)
-        data[req.params.id] = rawData;
-        //console.log(data);
-
-        var index = Math.floor(Math.random()*9);
-        res.send({"value":index});
-    }
+    })
 });
 
 // function getValue(_id) {

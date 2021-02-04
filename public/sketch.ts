@@ -1,5 +1,3 @@
-import { response } from "express";
-
 export {};
 var squares:HTMLElement[] = [];
 var state: boolean = true;
@@ -91,10 +89,12 @@ function fetchStuff(): void{
 
     console.log("fetching...");
     fetch(`/get/${formatId}`)
-    .then(response =>  response.json())
+    .then(response =>  {
+        return response.json();
+    })
     .then(data => {
         console.log(data);
-        setValue(data.value);
+        document.getElementById(`a${data["value"]}`).click();
     });
 }
 
