@@ -44,8 +44,8 @@ app.get('/update/:id/:outcome',(req,res) => {
 });
 
 app.get('/get/:id',(req,res) => {
-    db.find({myId: `${req.params.id}`},(err,docs) => {
-        if (docs.length == 0){
+    db.findOne({myId: `${req.params.id}`},(err,doc) => {
+        if (doc == null){
             var rawData = [];
             for(var i = 0;i < 9 ;i++) {
                 if(req.params.id.charAt(i) == "S") {
@@ -57,13 +57,15 @@ app.get('/get/:id',(req,res) => {
             console.log(rawData);
             db.insert({myId: req.params.id,data:rawData},(err,newDoc) => {
                 //console.log(newDoc);
-                var index = Math.floor(Math.random()*90);
-                res.send({"value":newDoc.data[index]});
+                var index1 = Math.floor(Math.random()*90);
+                res.send({"value":newDoc.data[index1]});
             });
         }else{
             console.log('sending...');
-            var index = Math.floor(Math.random()*90);
-            res.send({"value":docs[0].data[index]});
+            console.log(doc);
+            
+            var index2 = Math.floor(Math.random()*90);
+            res.send({"value":doc.data[index2]});
             console.log('...sent');
             
         }
