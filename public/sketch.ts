@@ -3,7 +3,7 @@ var squares:HTMLElement[] = [];
 var state: boolean = true;
 var moves: number = 0;
 var playable:boolean = true;
-var allMoves: Array<string> = [];
+var allMoves: Array<Object> = [];
 var positions: Array<string> = [
     "","","",
     "","","",
@@ -60,6 +60,16 @@ function setValue(id: number): void {
             }
             //alert(`Winner: ${winner}`);
             document.getElementById('winningDiv').innerHTML = `${winner} wins!`;
+            console.log(allMoves);
+            for(var i =0;i < allMoves.length;i++) {
+                fetch(`/update/${allMoves[i]._id}/${allMoves[i].move}/${winner}`)
+                .then(response =>  {
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                });
+            }
 
         }
 
@@ -91,7 +101,7 @@ function fetchStuff(): void{
         }
         console.log('format id: '+formatId);
         playable = false;
-        allMoves.push(formatId);
+        //allMoves.push(formatId);
 
         console.log("fetching...");
         fetch(`/get/${formatId}`)
@@ -104,6 +114,8 @@ function fetchStuff(): void{
             //document.getElementById(`a${data.value}`).click();
             if("value" in data) {
                 setValue(data.value);
+                allMoves.push({'_id': formatId,'move':data.value});
+
             }else{
                 alert('There was a error. please refresh');
             }

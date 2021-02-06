@@ -52,6 +52,16 @@ function setValue(id) {
             }
             //alert(`Winner: ${winner}`);
             document.getElementById('winningDiv').innerHTML = winner + " wins!";
+            console.log(allMoves);
+            for (var i = 0; i < allMoves.length; i++) {
+                fetch("/update/" + allMoves[i]._id + "/" + allMoves[i].move + "/" + winner)
+                    .then(function (response) {
+                    return response.json();
+                })
+                    .then(function (data) {
+                    console.log(data);
+                });
+            }
         }
         //alert(`Returned winner: ${winner}`);
         if (moves >= 9) {
@@ -78,7 +88,7 @@ function fetchStuff() {
         }
         console.log('format id: ' + formatId);
         playable = false;
-        allMoves.push(formatId);
+        //allMoves.push(formatId);
         console.log("fetching...");
         fetch("/get/" + formatId)
             .then(function (response) {
@@ -90,6 +100,7 @@ function fetchStuff() {
             //document.getElementById(`a${data.value}`).click();
             if ("value" in data) {
                 setValue(data.value);
+                allMoves.push({ '_id': formatId, 'move': data.value });
             }
             else {
                 alert('There was a error. please refresh');

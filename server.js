@@ -16,31 +16,50 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-app.get('/update/:id/:outcome',(req,res) => {
+app.get('/update/:id/:move/:outcome',(req,res) => {
     var outcome = req.params.outcome;
     var id = req.params.id;
-    var myPositions = [];
-    for(var i = 0;i < 9;i++) {
-        if(id.charAt(i) == "X"){
-            myPositions.push(i);
+    var move = parseInt(req.params.move);   
+    // var myPositions = [];
+    // for(var i = 0;i < 9;i++) {
+    //     if(id.charAt(i) == "X"){
+    //         myPositions.push(i);
+    //     }
+    // }
+    // if(outcome == "win") {
+    //     for(var i = 0; i < myPositions.length;i++) {
+    //         data[id].push(myPositions[i]);
+    //     }
+    // }
+    // if(outcome == "lose") {
+    //     for(var i = 0; i < myPositions.length;i++) {
+    //         for(var j = 0; j < data[id].length;j++) {
+    //             if(data[id][j] == myPositions[i]){
+    //                 data[i].splice(i,1);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
+    // res.send({"status": "ok"})
+    db.findOne({myId:`${id}`},(err,doc)=> {
+        var retrievedData = doc.data;
+        if(outcome == "X") {
+            retrievedData.push(move);
         }
-    }
-    if(outcome == "win") {
-        for(var i = 0; i < myPositions.length;i++) {
-            data[id].push(myPositions[i]);
-        }
-    }
-    if(outcome == "lose") {
-        for(var i = 0; i < myPositions.length;i++) {
-            for(var j = 0; j < data[id].length;j++) {
-                if(data[id][j] == myPositions[i]){
-                    data[i].splice(i,1);
+        if(outcome == "O") {
+            for(var i = 0; i < retrievedData.length;i++) {
+                if(retrievedData[i] == move){
+                    retrievedData.splice(i,1);
                     break;
                 }
             }
         }
-    }
-    res.send({"status": "ok"})
+        db.update({myId:id},{$set:{data:retrievedData}},(error,numReplaced) => {
+            console.log(`Replaced object with id : ${id} with array: ${retrievedData}`);
+        });
+        res.send({"SUCCESS":"SUCCESS"});
+    });
 });
 
 app.get('/get/:id',(req,res) => {
@@ -54,15 +73,21 @@ app.get('/get/:id',(req,res) => {
                     }
                 }
             }
-            console.log(rawData);
-            db.insert({myId: req.params.id,data:rawData},(err,newDoc) => {
-                //console.log(newDoc);
-                var index1 = Math.floor(Math.random()*90);
+            //console.log(rawData);
+            db.insert({myId: req.params.id,data:rawData},(errs,newDoc) => {
+                console.log(newDoc);
+                var index1 = Math.floor(Math.random()*newDoc.data.length);
+                console.log('index: '+index1);
+                console.log('.data: '+newDoc.data);                
+                console.log(newDoc.data[index1]);
                 res.send({"value":newDoc.data[index1]});
             });
         }else{
             console.log('sending...');
             console.log(doc);
+            if(doc == {}){
+                console.log('empty doc found');
+            }
             
             var index2 = Math.floor(Math.random()*90);
             res.send({"value":doc.data[index2]});
