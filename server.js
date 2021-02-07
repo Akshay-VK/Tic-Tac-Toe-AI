@@ -20,28 +20,7 @@ app.get('/update/:id/:move/:outcome',(req,res) => {
     var outcome = req.params.outcome;
     var id = req.params.id;
     var move = parseInt(req.params.move);   
-    // var myPositions = [];
-    // for(var i = 0;i < 9;i++) {
-    //     if(id.charAt(i) == "X"){
-    //         myPositions.push(i);
-    //     }
-    // }
-    // if(outcome == "win") {
-    //     for(var i = 0; i < myPositions.length;i++) {
-    //         data[id].push(myPositions[i]);
-    //     }
-    // }
-    // if(outcome == "lose") {
-    //     for(var i = 0; i < myPositions.length;i++) {
-    //         for(var j = 0; j < data[id].length;j++) {
-    //             if(data[id][j] == myPositions[i]){
-    //                 data[i].splice(i,1);
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-    // res.send({"status": "ok"})
+
     db.findOne({myId:`${id}`},(err,doc)=> {
         var retrievedData = doc.data;
         if(outcome == "X") {
