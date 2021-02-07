@@ -98,5 +98,5 @@ app.get('/get/:id',(req,res) => {
 });
 
 app.listen(port,()=>{
-    console.log(`Server started st port ${port}`);
+    console.log(`Server started at port ${port}`);
 });
