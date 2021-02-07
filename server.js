@@ -55,7 +55,7 @@ app.get('/update/:id/:move/:outcome',(req,res) => {
                 }
             }
         }
-        db.update({myId:id},{$set:{data:retrievedData}},(error,numReplaced) => {
+        db.update({myId:id},{$set:{myId:id,data:retrievedData}},(error,numReplaced) => {
             console.log(`Replaced object with id : ${id} with array: ${retrievedData}`);
         });
         res.send({"SUCCESS":"SUCCESS"});
